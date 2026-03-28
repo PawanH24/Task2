@@ -47,10 +47,8 @@ export default function AddPostForm({ userId, setPosts }: AddPostFormProps) {
 
       const newPost: Post = { ...data, id: Date.now() };
 
-      // Update UI
       setPosts((prev) => [newPost, ...(Array.isArray(prev) ? prev : [])]);
 
-      // Save to localStorage
       const existingPosts: Post[] = JSON.parse(
         localStorage.getItem("posts") || "[]",
       );

@@ -1,6 +1,5 @@
 "use client";
-import AddPostForm from "@/components/AddPostForm";
-import PostCard from "@/components/PostCard";
+
 import SearchBar from "@/components/SearchBar";
 import UserCard from "@/components/UserCard";
 import { useEffect, useState } from "react";

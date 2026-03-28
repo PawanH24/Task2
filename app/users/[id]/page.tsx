@@ -32,8 +32,9 @@ export default function Users({ params }: { params: Promise<{ id: string }> }) {
         );
 
         setPosts([...userLocalPosts, ...data]);
-      } catch (err: any) {
-        setError(err.message || "Something went wrong");
+      } catch (err: unknown) {
+        if (err instanceof Error) setError(err.message);
+        else setError("Something went wrong");
       } finally {
         setIsLoading(false);
       }

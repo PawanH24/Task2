@@ -3,13 +3,12 @@ import { useState } from "react";
 import { Post } from "@/app/types/types";
 import { formSchema } from "@/app/lib/validation";
 
-export default function AddPostForm({
-  userId,
-  setPosts,
-}: {
+type AddPostFormProps = {
   userId: string;
-  setPosts: any;
-}) {
+  setPosts: (posts: Post[] | ((prev: Post[]) => Post[])) => void;
+};
+
+export default function AddPostForm({ userId, setPosts }: AddPostFormProps) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -24,12 +23,10 @@ export default function AddPostForm({
 
     if (!result.success) {
       const fieldErrors = result.error.flatten().fieldErrors;
-
       setErrors({
         title: fieldErrors.title?.[0],
         body: fieldErrors.body?.[0],
       });
-
       return;
     }
 
@@ -38,29 +35,25 @@ export default function AddPostForm({
 
       const res = await fetch("https://jsonplaceholder.typicode.com/posts", {
         method: "POST",
-        body: JSON.stringify({
-          title,
-          body,
-          userId,
-        }),
+        body: JSON.stringify({ title, body, userId }),
         headers: {
           "Content-type": "application/json; charset=UTF-8",
         },
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to create post");
-      }
+      if (!res.ok) throw new Error("Failed to create post");
 
-      const data = await res.json();
+      const data: Post = await res.json();
 
-      const newPost = { ...data, id: Date.now() };
+      const newPost: Post = { ...data, id: Date.now() };
 
-      // update UI
-      setPosts((prev: Post[]) => [newPost, ...prev]);
+      // Update UI
+      setPosts((prev) => [newPost, ...(Array.isArray(prev) ? prev : [])]);
 
-      // ✅ save to localStorage
-      const existingPosts = JSON.parse(localStorage.getItem("posts") || "[]");
+      // Save to localStorage
+      const existingPosts: Post[] = JSON.parse(
+        localStorage.getItem("posts") || "[]",
+      );
       localStorage.setItem(
         "posts",
         JSON.stringify([newPost, ...existingPosts]),
@@ -68,8 +61,9 @@ export default function AddPostForm({
 
       setTitle("");
       setBody("");
-    } catch (err: any) {
-      setError(err.message || "Something went wrong");
+    } catch (err: unknown) {
+      if (err instanceof Error) setError(err.message);
+      else setError("Something went wrong");
     } finally {
       setIsSubmitting(false);
     }

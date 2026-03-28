@@ -1,6 +1,10 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 
-export default function SearchBar({ setSearch }) {
+export default function SearchBar({
+  setSearch,
+}: {
+  setSearch: (value: string) => void;
+}) {
   return (
     <div className="flex items-center border border-white rounded p-1 m-5 max-w-[30rem] w-full">
       <MagnifyingGlassIcon className="h-5 w-5 flex mx-1" />
